@@ -70,10 +70,12 @@ validation_image_generator = ImageDataGenerator(
 
 # flow_from_directory method load images from the disk, applies rescaling, and resizes the images into the required dimensions
 train_data_gen = train_image_generator.flow_from_directory(
-    batch_size=batch_size, directory=train_dir, shuffle=True, target_size=(IMG_HEIGHT, IMG_WIDTH), class_mode='binary')
+    batch_size=batch_size, directory=train_dir, shuffle=True, target_size=(IMG_HEIGHT, IMG_WIDTH), class_mode='categorical')
 
 val_data_gen = validation_image_generator.flow_from_directory(
-    batch_size=batch_size, directory=validation_dir, target_size=(IMG_HEIGHT, IMG_WIDTH), class_mode='binary')
+    batch_size=batch_size, directory=validation_dir, target_size=(IMG_HEIGHT, IMG_WIDTH), class_mode='categorical')
+
+print(val_data_gen)
 
 # next function returns a batch from the dataset. The return value of next function is in form of (x_train, y_train)
 sample_training_images, _ = next(train_data_gen)
@@ -82,17 +84,16 @@ sample_training_images, _ = next(train_data_gen)
 # function to plot images in the form of a grid with 1 row and 5 columns where images are placed in each column
 
 
-def plotImages(images_arr):
-    fig, axes = plt.subplots(1, 5, figsize=(20, 20))
-    axes = axes.flatten()
-    for img, ax in zip(images_arr, axes):
-        ax.imshow(img)
-        ax.axis('off')
-    plt.tight_layout()
-    plt.show()
+# def plotImages(images_arr):
+#     fig, axes = plt.subplots(1, 5, figsize=(20, 20))
+#     axes = axes.flatten()
+#     for img, ax in zip(images_arr, axes):
+#         ax.imshow(img)
+#         ax.axis('off')
+#     plt.tight_layout()
+#     plt.show()
 
-
-plotImages(sample_training_images[:5])
+# plotImages(sample_training_images[:5])
 
 # creating the model
 model = tf.keras.models.Sequential([

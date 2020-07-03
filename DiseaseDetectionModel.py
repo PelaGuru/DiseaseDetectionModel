@@ -62,7 +62,11 @@ IMG_WIDTH = 150
 
 # Generator for our training data
 train_image_generator = ImageDataGenerator(
-    rescale=1./255)
+    rescale=1./255,  rotation_range=45,
+    width_shift_range=.15,
+    height_shift_range=.15,
+    horizontal_flip=True,
+    zoom_range=0.5)
 
 # Generator for our validation data
 validation_image_generator = ImageDataGenerator(
@@ -75,7 +79,6 @@ train_data_gen = train_image_generator.flow_from_directory(
 val_data_gen = validation_image_generator.flow_from_directory(
     batch_size=batch_size, directory=validation_dir, target_size=(IMG_HEIGHT, IMG_WIDTH), class_mode='categorical')
 
-print(val_data_gen)
 
 # next function returns a batch from the dataset. The return value of next function is in form of (x_train, y_train)
 sample_training_images, _ = next(train_data_gen)
@@ -93,17 +96,22 @@ sample_training_images, _ = next(train_data_gen)
 #     plt.tight_layout()
 #     plt.show()
 
+
 # plotImages(sample_training_images[:5])
+# augmented_images = [train_data_gen[0][0][0] for i in range(5)]
+# plotImages(augmented_images)
 
 # creating the model
 model = tf.keras.models.Sequential([
     tf.keras.layers.Conv2D(16, 3, padding='same', activation='relu', input_shape=(
         IMG_HEIGHT, IMG_WIDTH, 3)),
     tf.keras.layers.MaxPool2D(),
+    tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
     tf.keras.layers.MaxPooling2D(),
     tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
     tf.keras.layers.MaxPooling2D(),
+    tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(512, activation='relu'),
     tf.keras.layers.Dense(4)

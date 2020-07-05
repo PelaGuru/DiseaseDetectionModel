@@ -101,27 +101,39 @@ sample_training_images, _ = next(train_data_gen)
 # augmented_images = [train_data_gen[0][0][0] for i in range(5)]
 # plotImages(augmented_images)
 
-# creating the model
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Conv2D(16, 3, padding='same', activation='relu', input_shape=(
-        IMG_HEIGHT, IMG_WIDTH, 3)),
-    tf.keras.layers.MaxPool2D(),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
-    tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
-    tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(512, activation='relu'),
-    tf.keras.layers.Dense(4)
-])
+def create_model():
+    # creating the model
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Conv2D(16, 3, padding='same', activation='relu', input_shape=(
+            IMG_HEIGHT, IMG_WIDTH, 3)),
+        tf.keras.layers.MaxPool2D(),
+        tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(512, activation='relu'),
+        tf.keras.layers.Dense(4)
+    ])
 
-# compiling the model
-model.compile(optimizer='adam', loss=tf.keras.losses.BinaryCrossentropy(
-    from_logits=True), metrics=['accuracy'])
+    # compiling the model
+    model.compile(optimizer='adam', loss=tf.keras.losses.CategoricalCrossentropy(
+        from_logits=True), metrics=['accuracy'])
+
+    return model
+
+
+# Create a basic model instance
+model = create_model()
 
 model.summary()
+
+checkpoint_path = "training_2/cp.ckpt"
+checkpoint_dir = os.path.dirname(checkpoint_path)
+
+# Create a callback that saves the model's weights
+cp_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath=checkpoint_path, save_weights_only=True, verbose=1)
 
 # training the model
 history = model.fit(
@@ -129,8 +141,12 @@ history = model.fit(
     steps_per_epoch=total_train // batch_size,
     epochs=epochs,
     validation_data=val_data_gen,
-    validation_steps=total_val // batch_size
+    validation_steps=total_val // batch_size,
+    callbacks=[cp_callback]
 )
+
+# Save the entire model as a SavedModel.
+model.save('detection_model2')
 
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']

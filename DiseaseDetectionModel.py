@@ -7,7 +7,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # ROOT_DIR = 'C:\Users\damsa\Desktop\Pelaguru\Disease Detection Model'
 PATH = os.path.join(
-    'C:\\Users\\damsa\\Desktop\\Pelaguru\\Disease Detection Model', 'Dataset')
+    'E:\\angular projects\\project\\DiseaseDetectionModel', 'Dataset')
 
 # print(os.path.dirname(path_to_zip))
 
@@ -56,17 +56,13 @@ print("Total validation images:", total_val)
 
 # variables to use while pre-processing the dataset and training the network
 batch_size = 128
-epochs = 15
+epochs = 25
 IMG_HEIGHT = 150
 IMG_WIDTH = 150
 
 # Generator for our training data
 train_image_generator = ImageDataGenerator(
-    rescale=1./255,  rotation_range=45,
-    width_shift_range=.15,
-    height_shift_range=.15,
-    horizontal_flip=True,
-    zoom_range=0.5)
+    rescale=1./255)
 
 # Generator for our validation data
 validation_image_generator = ImageDataGenerator(
@@ -81,7 +77,7 @@ val_data_gen = validation_image_generator.flow_from_directory(
 
 
 # next function returns a batch from the dataset. The return value of next function is in form of (x_train, y_train)
-sample_training_images, _ = next(train_data_gen)
+# sample_training_images, _ = next(train_data_gen)
 
 
 # function to plot images in the form of a grid with 1 row and 5 columns where images are placed in each column
@@ -107,10 +103,6 @@ def create_model():
         tf.keras.layers.Conv2D(16, 3, padding='same', activation='relu', input_shape=(
             IMG_HEIGHT, IMG_WIDTH, 3)),
         tf.keras.layers.MaxPool2D(),
-        tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(512, activation='relu'),
         tf.keras.layers.Dense(4)
@@ -128,7 +120,7 @@ model = create_model()
 
 model.summary()
 
-checkpoint_path = "training_2/cp.ckpt"
+checkpoint_path = "training_1/cp.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
 # Create a callback that saves the model's weights
@@ -146,7 +138,7 @@ history = model.fit(
 )
 
 # Save the entire model as a SavedModel.
-model.save('detection_model2')
+model.save('detection_model')
 
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
@@ -162,10 +154,14 @@ plt.plot(epochs_range, acc, label='Training Accuracy')
 plt.plot(epochs_range, val_acc, label='Validation Accuracy')
 plt.legend(loc='lower right')
 plt.title('Training and Validation Accuracy')
+plt.xlabel('Number of epochs')
+plt.ylabel('Accuracy')
 
 plt.subplot(1, 2, 2)
 plt.plot(epochs_range, loss, label='Training Loss')
 plt.plot(epochs_range, val_loss, label='Validation Loss')
 plt.legend(loc='upper right')
 plt.title('Training and Validation Loss')
+plt.xlabel('Number of epochs')
+plt.ylabel('Loss')
 plt.show()

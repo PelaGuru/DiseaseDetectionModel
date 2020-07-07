@@ -6,8 +6,9 @@ import os
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # ROOT_DIR = 'C:\Users\damsa\Desktop\Pelaguru\Disease Detection Model'
+# ROOT_DIR = 'H:\\UCSC\\3001\\3113 Group Project II X\\project folder\\DiseaseDetectionModel'
 PATH = os.path.join(
-    'E:\\angular projects\\project\\DiseaseDetectionModel', 'Dataset')
+    'H:\\UCSC\\3001\\3113 Group Project II X\\project folder\\DiseaseDetectionModel', 'Dataset')
 
 # print(os.path.dirname(path_to_zip))
 
@@ -62,7 +63,9 @@ IMG_WIDTH = 150
 
 # Generator for our training data
 train_image_generator = ImageDataGenerator(
-    rescale=1./255)
+    rescale=1./255,  rotation_range=45,
+    horizontal_flip=True,
+    zoom_range=0.5)
 
 # Generator for our validation data
 validation_image_generator = ImageDataGenerator(
@@ -103,6 +106,8 @@ def create_model():
         tf.keras.layers.Conv2D(16, 3, padding='same', activation='relu', input_shape=(
             IMG_HEIGHT, IMG_WIDTH, 3)),
         tf.keras.layers.MaxPool2D(),
+        tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(512, activation='relu'),
         tf.keras.layers.Dense(4)
@@ -120,7 +125,7 @@ model = create_model()
 
 model.summary()
 
-checkpoint_path = "training_1/cp.ckpt"
+checkpoint_path = "training_2/cp.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
 # Create a callback that saves the model's weights
@@ -138,7 +143,7 @@ history = model.fit(
 )
 
 # Save the entire model as a SavedModel.
-model.save('detection_model')
+model.save('detection_model_2')
 
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']

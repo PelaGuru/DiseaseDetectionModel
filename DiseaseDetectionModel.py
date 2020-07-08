@@ -6,8 +6,9 @@ import os
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # ROOT_DIR = 'C:\Users\damsa\Desktop\Pelaguru\Disease Detection Model'
+# ROOT_DIR = 'H:\\UCSC\\3001\\3113 Group Project II X\\project folder\\DiseaseDetectionModel'
 PATH = os.path.join(
-    'C:\\Users\\damsa\\Desktop\\Pelaguru\\Disease Detection Model', 'Dataset')
+    'H:\\UCSC\\3001\\3113 Group Project II X\\project folder\\DiseaseDetectionModel', 'Dataset')
 
 # print(os.path.dirname(path_to_zip))
 
@@ -63,8 +64,6 @@ IMG_WIDTH = 150
 # Generator for our training data
 train_image_generator = ImageDataGenerator(
     rescale=1./255,  rotation_range=45,
-    width_shift_range=.15,
-    height_shift_range=.15,
     horizontal_flip=True,
     zoom_range=0.5)
 
@@ -108,8 +107,6 @@ def create_model():
             IMG_HEIGHT, IMG_WIDTH, 3)),
         tf.keras.layers.MaxPool2D(),
         tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
         tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(512, activation='relu'),

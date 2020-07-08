@@ -56,7 +56,7 @@ print("Total validation images:", total_val)
 
 # variables to use while pre-processing the dataset and training the network
 batch_size = 128
-epochs = 15
+epochs = 25
 IMG_HEIGHT = 150
 IMG_WIDTH = 150
 
@@ -81,7 +81,7 @@ val_data_gen = validation_image_generator.flow_from_directory(
 
 
 # next function returns a batch from the dataset. The return value of next function is in form of (x_train, y_train)
-sample_training_images, _ = next(train_data_gen)
+# sample_training_images, _ = next(train_data_gen)
 
 
 # function to plot images in the form of a grid with 1 row and 5 columns where images are placed in each column
@@ -128,7 +128,7 @@ model = create_model()
 
 model.summary()
 
-checkpoint_path = "training_2/cp.ckpt"
+checkpoint_path = "training_3/cp.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
 # Create a callback that saves the model's weights
@@ -146,7 +146,7 @@ history = model.fit(
 )
 
 # Save the entire model as a SavedModel.
-model.save('detection_model2')
+model.save('detection_model_3')
 
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
@@ -162,10 +162,14 @@ plt.plot(epochs_range, acc, label='Training Accuracy')
 plt.plot(epochs_range, val_acc, label='Validation Accuracy')
 plt.legend(loc='lower right')
 plt.title('Training and Validation Accuracy')
+plt.xlabel('Number of epochs')
+plt.ylabel('Accuracy')
 
 plt.subplot(1, 2, 2)
 plt.plot(epochs_range, loss, label='Training Loss')
 plt.plot(epochs_range, val_loss, label='Validation Loss')
 plt.legend(loc='upper right')
 plt.title('Training and Validation Loss')
+plt.xlabel('Number of epochs')
+plt.ylabel('Loss')
 plt.show()

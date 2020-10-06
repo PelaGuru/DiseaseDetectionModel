@@ -1,5 +1,5 @@
 # Disease Detection Model and Prediction
-This repository contains the Disease Detection Model and the corresponding Prediction Model for PelaGuru Web Application.
+This repository contains the disease detection model developed using Tensorflow and ditection function and the API for the PelaGuru Web Application.
 
 To run this model Localy you must clone the repository and train the model with corresponding dataset.
 

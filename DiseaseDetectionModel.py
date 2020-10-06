@@ -3,12 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+from tensorflow.keras.preprocessing import image
+
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # ROOT_DIR = 'C:\Users\damsa\Desktop\Pelaguru\Disease Detection Model'
-# ROOT_DIR = 'H:\\UCSC\\3001\\3113 Group Project II X\\project folder\\DiseaseDetectionModel'
 PATH = os.path.join(
-    'H:\\UCSC\\3001\\3113 Group Project II X\\project folder\\DiseaseDetectionModel', 'Dataset')
+    'C:\\Users\\induw\\Desktop\\Projects\\DiseaseDetectionModel', 'DATA SET TOMATO')
 
 # print(os.path.dirname(path_to_zip))
 
@@ -16,14 +17,14 @@ train_dir = os.path.join(PATH, 'train')
 validation_dir = os.path.join(PATH, 'validation')
 
 # loading training images
-train_cat1_dir = os.path.join(train_dir, '1 - Tomato Spider Mite Damage')
+train_cat1_dir = os.path.join(train_dir, '1 - Tomato_Spider_Mite_Damage')
 train_cat2_dir = os.path.join(train_dir, '2 - Tomato_Early _Blight')
 train_cat3_dir = os.path.join(train_dir, '3 - Tomato_Late_Blight')
 train_cat4_dir = os.path.join(train_dir, '4 - Tomato_Leaf_Mold')
 
 # loading validation images
 validation_cat1_dir = os.path.join(
-    validation_dir, '1 - Tomato Spider Mite Damage')
+    validation_dir, '1 - Tomato_Spider_Mite_Damage')
 validation_cat2_dir = os.path.join(validation_dir, '2 - Tomato_Early _Blight')
 validation_cat3_dir = os.path.join(validation_dir, '3 - Tomato_Late_Blight')
 validation_cat4_dir = os.path.join(validation_dir, '4 - Tomato_Leaf_Mold')
@@ -57,13 +58,15 @@ print("Total validation images:", total_val)
 
 # variables to use while pre-processing the dataset and training the network
 batch_size = 128
-epochs = 25
+epochs = 100
 IMG_HEIGHT = 150
 IMG_WIDTH = 150
 
 # Generator for our training data
 train_image_generator = ImageDataGenerator(
     rescale=1./255,  rotation_range=45,
+    width_shift_range=.15,
+    height_shift_range=.15,
     horizontal_flip=True,
     zoom_range=0.5)
 
@@ -80,7 +83,7 @@ val_data_gen = validation_image_generator.flow_from_directory(
 
 
 # next function returns a batch from the dataset. The return value of next function is in form of (x_train, y_train)
-# sample_training_images, _ = next(train_data_gen)
+sample_training_images, _ = next(train_data_gen)
 
 
 # function to plot images in the form of a grid with 1 row and 5 columns where images are placed in each column
@@ -108,6 +111,8 @@ def create_model():
         tf.keras.layers.MaxPool2D(),
         tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
         tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(512, activation='relu'),
         tf.keras.layers.Dense(4)
@@ -125,7 +130,7 @@ model = create_model()
 
 model.summary()
 
-checkpoint_path = "training_3/cp.ckpt"
+checkpoint_path = "training_4/cp.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
 # Create a callback that saves the model's weights
@@ -143,7 +148,7 @@ history = model.fit(
 )
 
 # Save the entire model as a SavedModel.
-model.save('detection_model_3')
+model.save('detection_model4')
 
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
@@ -159,14 +164,10 @@ plt.plot(epochs_range, acc, label='Training Accuracy')
 plt.plot(epochs_range, val_acc, label='Validation Accuracy')
 plt.legend(loc='lower right')
 plt.title('Training and Validation Accuracy')
-plt.xlabel('Number of epochs')
-plt.ylabel('Accuracy')
 
 plt.subplot(1, 2, 2)
 plt.plot(epochs_range, loss, label='Training Loss')
 plt.plot(epochs_range, val_loss, label='Validation Loss')
 plt.legend(loc='upper right')
 plt.title('Training and Validation Loss')
-plt.xlabel('Number of epochs')
-plt.ylabel('Loss')
 plt.show()

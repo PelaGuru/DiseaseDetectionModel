@@ -7,12 +7,13 @@ from tensorflow.keras.preprocessing import image
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-# ROOT_DIR = 'C:\Users\damsa\Desktop\Pelaguru\Disease Detection Model'
-PATH = os.path.join(
-    'C:\\Users\\induw\\Desktop\\Projects\\DiseaseDetectionModel', 'DATA SET TOMATO')
+# setting the root directory path of the model
+ROOT_DIR = 'C:\\Users\\damsa\\Desktop\\Pelaguru\\Disease Detection Model'
 
-# print(os.path.dirname(path_to_zip))
+# settiing the directory of the dataset
+PATH = os.path.join(ROOT_DIR, 'Dataset')
 
+# setting the training and validation image directory paths
 train_dir = os.path.join(PATH, 'train')
 validation_dir = os.path.join(PATH, 'validation')
 
@@ -29,18 +30,22 @@ validation_cat2_dir = os.path.join(validation_dir, '2 - Tomato_Early _Blight')
 validation_cat3_dir = os.path.join(validation_dir, '3 - Tomato_Late_Blight')
 validation_cat4_dir = os.path.join(validation_dir, '4 - Tomato_Leaf_Mold')
 
-
+# to get the no of training images in each disease category
 num_cat1_tr = len(os.listdir(train_cat1_dir))
 num_cat2_tr = len(os.listdir(train_cat2_dir))
 num_cat3_tr = len(os.listdir(train_cat3_dir))
 num_cat4_tr = len(os.listdir(train_cat4_dir))
 
+# to get the no of validation images in each disease category
 num_cat1_val = len(os.listdir(validation_cat1_dir))
 num_cat2_val = len(os.listdir(validation_cat2_dir))
 num_cat3_val = len(os.listdir(validation_cat3_dir))
 num_cat4_val = len(os.listdir(validation_cat4_dir))
 
+# total no of test images
 total_train = num_cat1_tr + num_cat2_tr + num_cat3_tr + num_cat4_tr
+
+# total no of validation images
 total_val = num_cat1_val + num_cat2_val + num_cat3_val + num_cat4_val
 
 print('total training cat1 images:', num_cat1_tr)
@@ -58,7 +63,7 @@ print("Total validation images:", total_val)
 
 # variables to use while pre-processing the dataset and training the network
 batch_size = 128
-epochs = 100
+epochs = 50
 IMG_HEIGHT = 150
 IMG_WIDTH = 150
 
@@ -87,7 +92,6 @@ sample_training_images, _ = next(train_data_gen)
 
 
 # function to plot images in the form of a grid with 1 row and 5 columns where images are placed in each column
-
 
 # def plotImages(images_arr):
 #     fig, axes = plt.subplots(1, 5, figsize=(20, 20))
@@ -128,8 +132,11 @@ def create_model():
 # Create a basic model instance
 model = create_model()
 
+# to get an idea about the model like no of layers and their shape etc.
 model.summary()
 
+# setting the checkpoint path
+# (checkpoints save parameter values in different iterations of the training process)
 checkpoint_path = "training_4/cp.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
@@ -147,9 +154,10 @@ history = model.fit(
     callbacks=[cp_callback]
 )
 
-# Save the entire model as a SavedModel.
+# Save the entire model which could be used later for getting predictions
 model.save('detection_model4')
 
+# data used when plotting accuracy and loss values
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
 
@@ -158,6 +166,7 @@ val_loss = history.history['val_loss']
 
 epochs_range = range(epochs)
 
+# plotting the training accuracy and validation accuracy
 plt.figure(figsize=(8, 8))
 plt.subplot(1, 2, 1)
 plt.plot(epochs_range, acc, label='Training Accuracy')
@@ -165,6 +174,7 @@ plt.plot(epochs_range, val_acc, label='Validation Accuracy')
 plt.legend(loc='lower right')
 plt.title('Training and Validation Accuracy')
 
+# plotting the training loss and validation loss
 plt.subplot(1, 2, 2)
 plt.plot(epochs_range, loss, label='Training Loss')
 plt.plot(epochs_range, val_loss, label='Validation Loss')
